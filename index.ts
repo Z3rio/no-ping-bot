@@ -73,7 +73,6 @@ client.on("messageCreate", async (message: any) => {
     message.author.id !== process.env.BOT_ID &&
     (message.author.bot == false || process.env.DISABLE_FOR_BOTS == "true")
   ) {
-    console.log(message.mentions.users);
     const { contains, name } = checkMessage(message.mentions.users);
 
     if (contains) {
