@@ -1,5 +1,6 @@
 // Imports
 const { Client, Partials, GatewayIntentBits } = require("discord.js");
+import { Collection } from "discord.js";
 import * as dotenv from "dotenv";
 
 // Interfaces
@@ -49,13 +50,15 @@ const client = new Client({
 });
 
 // Functions
-function checkMessage(message: string): MessageResp {
-  for (let i = 0; i < users.length; i++) {
-    if (message.includes(`<@${users[i].id}>`)) {
-      return {
-        contains: true,
-        name: users[i].name,
-      };
+function checkMessage(usersMentioned: Collection<string, User>): MessageResp {
+  for (let [idx, user] of usersMentioned) {
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].id == user.id) {
+        return {
+          contains: true,
+          name: users[i].name,
+        };
+      }
     }
   }
 
@@ -70,7 +73,8 @@ client.on("messageCreate", async (message: any) => {
     message.author.id !== process.env.BOT_ID &&
     (message.author.bot == false || process.env.DISABLE_FOR_BOTS == "true")
   ) {
-    const { contains, name } = checkMessage(message.content);
+    console.log(message.mentions.users);
+    const { contains, name } = checkMessage(message.mentions.users);
 
     if (contains) {
       message.reply(`Dont ping ${name} please`);
